@@ -218,7 +218,7 @@ export default function EnergyForm() {
                                     <div className="w-full bg-white/10 rounded-full h-2 mt-2">
                                         <div
                                             className="bg-gradient-to-r from-green-500 to-red-500 h-2 rounded-full"
-                                            style={{ width: `${(energyState.fatigue_index || 0) * 100}%` }}
+                                            style={{ width: `${Math.min(Math.max((energyState.fatigue_index ?? 0) * 100, 0), 100)}%` }}
                                         />
                                     </div>
                                 </div>

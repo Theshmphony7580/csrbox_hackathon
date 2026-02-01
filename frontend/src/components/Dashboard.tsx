@@ -13,10 +13,15 @@ interface AnalyticsData {
 interface PlanHistoryItem {
     id: number;
     date: string;
-    cognitive_profile: string;
+    cognitive_profile: {
+        type: string;
+        confidence: number;
+        features: any;
+    };
     energy_score: number;
     created_at: string;
 }
+
 
 export default function Dashboard() {
     const { user, cognitiveProfile, energyState, setCognitiveProfile, setEnergyState } = useStore();
@@ -140,7 +145,9 @@ export default function Dashboard() {
                                 {energyState.energy_score}/100
                             </p>
                             <p className="text-xs text-gray-400">
-                                Fatigue Index: {energyState.fatigue_index?.toFixed(1)}
+                                Fatigue Index: {energyState.fatigue_index != null
+                                    ? energyState.fatigue_index.toFixed(1)
+                                    : '—'}
                             </p>
                         </div>
                     ) : (
@@ -249,7 +256,7 @@ export default function Dashboard() {
                                     <div>
                                         <p className="text-white font-medium">{plan.date}</p>
                                         <p className="text-sm text-gray-400">
-                                            {plan.cognitive_profile} • Energy: {plan.energy_score}
+                                            {plan.cognitive_profile.type} • Energy: {plan.energy_score}
                                         </p>
                                     </div>
                                     <p className="text-xs text-gray-500">
