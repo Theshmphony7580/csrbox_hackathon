@@ -8,3 +8,4 @@ email-validator
 python-multipart
 databases[sqlite]
 google-generativeai
+gunicorn
