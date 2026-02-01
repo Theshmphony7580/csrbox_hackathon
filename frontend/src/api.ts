@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = '/api';
+const API_BASE = 'http://localhost:8000';
 
 const api = axios.create({
     baseURL: API_BASE,
@@ -95,6 +95,26 @@ export const getPerformanceAnalytics = async () => {
     const response = await api.get('/analytics/performance');
     return response.data;
 };
+
+// Chat
+export async function sendChatMessage(message: string) {
+    const res = await fetch(`${API_BASE}/chat/message`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ message })
+    });
+
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || 'Chat failed');
+    }
+
+    return res.json();
+}
+
 
 // Feedback
 export const submitFeedback = async (data: {

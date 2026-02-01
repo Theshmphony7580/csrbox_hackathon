@@ -11,7 +11,8 @@ export default function Navbar() {
         { path: '/', label: 'Dashboard', icon: '📊' },
         { path: '/cognitive', label: 'Cognitive', icon: '🧠' },
         { path: '/energy', label: 'Energy', icon: '⚡' },
-        { path: '/schedule', label: 'Schedule', icon: '📅' }
+        { path: '/schedule', label: 'Schedule', icon: '📅' },
+        { path: '/chatbot', label: 'Chatbot', icon: '💬' },
     ];
 
     return (

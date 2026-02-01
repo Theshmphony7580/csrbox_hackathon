@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../store';
 import { getCognitiveProfile, getCurrentEnergy, getPerformanceAnalytics, getPlanHistory } from '../api';
+
+const examplePrompts = [
+  "Explain thermodynamics with an example",
+  "What should I study right now?",
+  "Help me solve a physics problem",
+];
 
 interface AnalyticsData {
     date: string;
@@ -24,10 +30,16 @@ interface PlanHistoryItem {
 
 
 export default function Dashboard() {
+    const navigate = useNavigate();
     const { user, cognitiveProfile, energyState, setCognitiveProfile, setEnergyState } = useStore();
     const [analytics, setAnalytics] = useState<AnalyticsData[]>([]);
     const [planHistory, setPlanHistory] = useState<PlanHistoryItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const openChatWithPrompt = (prompt: string) => {
+        navigate("/chatbot", {
+        state: { initialMessage: prompt },
+        });
+    };
 
     useEffect(() => {
         loadDashboardData();
@@ -180,6 +192,52 @@ export default function Dashboard() {
                     )}
                 </div>
             </div>
+
+            <div className="glass rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                {/* Left content */}
+                <div>
+                    <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                    🤖 ChatAI
+                    </h3>
+                    <p className="text-gray-300 max-w-xl leading-relaxed">
+                    Your personal AI study assistant that understands your{" "}
+                    <span className="text-sky-400 font-medium">energy level</span> and{" "}
+                    <span className="text-purple-400 font-medium">cognitive profile</span>.
+                    Ask questions, solve problems, or get explanations tailored just for you.
+                    </p>
+
+                    {/* Example prompts */}
+                    <div className="mt-4 flex flex-wrap gap-2">
+                        {examplePrompts.map((prompt, i) => (
+                            <button
+                            key={i}
+                            onClick={() => openChatWithPrompt(prompt)}
+                            className="text-xs px-3 py-1 rounded-full
+                                        bg-white/10 border border-white/20
+                                        text-gray-300 hover:bg-white/20
+                                        transition"
+                            >
+                            {prompt}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* CTA */}
+                <div className="w-full md:w-auto">
+                    <button
+                    onClick={() => navigate("/chatbot")}
+                    className="w-full md:w-auto px-6 py-3 rounded-xl font-semibold
+                                bg-gradient-to-r from-sky-500 to-indigo-500
+                                hover:from-sky-400 hover:to-indigo-400
+                                text-white shadow-lg shadow-sky-500/20
+                                transition-all hover:scale-105"
+                    >
+                    Start Chat →
+                    </button>
+                </div>
+            </div>
+            <br />
 
             {/* Quick Actions */}
             <div className="mb-8">

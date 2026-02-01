@@ -17,6 +17,13 @@ import schemas
 from engine.cognitive import classify_cognitive_profile
 from engine.energy import calculate_energy_score, get_energy_level, get_energy_analysis
 from engine.scheduler import generate_schedule
+from engine.chatbot import generate_chat_response
+from engine.gemini_chat import generate_gemini_response
+from pydantic import BaseModel
+
+class ChatRequest(BaseModel):
+    message: str
+
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -108,6 +115,58 @@ async def get_current_user(
         raise credentials_exception
     return user
 
+# --- Chatbot Endpoint ---
+@app.post("/chat/message")
+async def chat_message(
+    payload: ChatRequest,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    message = payload.message
+    print("📨 Chat message:", message)
+
+    # --- cognitive context ---
+    events = db.query(models.CognitiveEvent)\
+        .filter(models.CognitiveEvent.user_id == current_user.id)\
+        .order_by(models.CognitiveEvent.timestamp.desc())\
+        .limit(20)\
+        .all()
+
+    cognitive_profile = None
+    if events:
+        cognitive_profile = classify_cognitive_profile([
+            {
+                "time_taken": e.time_taken,
+                "correct": e.correct,
+                "confidence": e.confidence,
+                "retry_count": e.retry_count
+            } for e in events
+        ])
+
+    # --- energy context ---
+    energy_log = db.query(models.EnergyLog)\
+        .filter(models.EnergyLog.user_id == current_user.id)\
+        .order_by(models.EnergyLog.timestamp.desc())\
+        .first()
+
+    energy_state = None
+    if energy_log:
+        energy_state = get_energy_analysis(
+            energy_log.sleep_hours,
+            energy_log.tiredness
+        )
+
+    reply = generate_gemini_response(
+        message,
+        {
+            "cognitive_profile": cognitive_profile,
+            "energy": energy_state
+        }
+    )
+    print("🤖 Gemini reply:", reply)
+
+
+    return {"reply": reply}
 
 # --- Health Check ---
 @app.get("/health")

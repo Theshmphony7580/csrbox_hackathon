@@ -10,6 +10,7 @@ import EnergyForm from './components/EnergyForm';
 import Schedule from './components/Schedule';
 import Navbar from './components/Navbar';
 import type { ReactNode } from 'react';
+import Chatbot from './components/Chatbot';
 
 function PrivateRoute({ children }: { children: ReactNode }) {
     const isAuthenticated = useStore((state) => state.isAuthenticated);
@@ -90,6 +91,14 @@ function App() {
                             element={
                                 <PrivateRoute>
                                     <Schedule />
+                                </PrivateRoute>
+                            }
+                        />
+                        <Route
+                            path="/chatbot"
+                            element={
+                                <PrivateRoute>
+                                    <Chatbot />
                                 </PrivateRoute>
                             }
                         />
