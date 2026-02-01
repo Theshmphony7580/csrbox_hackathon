@@ -42,7 +42,7 @@ const TIME_SLOTS = [
 ];
 
 export default function Schedule() {
-    const { user, currentPlan, setCurrentPlan } = useStore();
+    const { user, setCurrentPlan } = useStore();
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [customSlots, setCustomSlots] = useState<string[]>([]);
     const [useCustomSlots, setUseCustomSlots] = useState(false);
